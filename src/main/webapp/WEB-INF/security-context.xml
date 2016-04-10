@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+       http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+    <context:component-scan base-package="com.rental"/>
+
+    <bean class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler"/>
+    <security:http auto-config="true" use-expressions="true">
+        <security:form-login login-page="/login" login-processing-url="/login" username-parameter="loginUserName"
+                             password-parameter="loginPassword" default-target-url="/cars" always-use-default-target="true"
+                             authentication-failure-url="/login?error=true"/>
+        <security:logout logout-url="/logout" logout-success-url="/login?logout=true"/>
+        <security:intercept-url pattern="/cars" access="hasAnyRole('ROLE_ADMIN','ROLE_USER')"/>
+        <security:intercept-url pattern="/**" access="permitAll"/>
+    </security:http>
+
+    <security:authentication-manager>
+       <security:ldap-authentication-provider user-search-filter="uid={0}" group-search-base="ou=groups" group-search-filter="uniqueMember={0}" server-ref="ldapServer"
+                                              user-context-mapper-ref="loggedInUserContextMapper" role-prefix="ROLE_" group-role-attribute="cn"/>
+    </security:authentication-manager>
+
+    <security:ldap-server id="ldapServer" url="ldap://localhost:10389/dc=rentalcars,dc=com" manager-dn="uid=admin,ou=system" manager-password="secret"/>
+</beans>

@@ -1,0 +1,10 @@
+body{
+    margin:0px;
+}
+.header{
+    height:50px;
+    background:teal;
+    border:1px solid #CCC;
+    width:100%;
+    margin:0px auto;
+}
